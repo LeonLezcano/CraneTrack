@@ -1,0 +1,25 @@
+{
+  "name": "cranetrack",
+  "version": "1.0.00",
+  "description": "Auxilio Mecánico Pesado, Remolques 24/7, Odómetro Haversine, Peritaje Pre-Enganche y Split Billing para Aseguradoras",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run_tests.js",
+    "test:security": "node ../AiAppFactory/tools/security-guardian/index.mjs .",
+    "security:full": "node ../AiAppFactory/tools/security-guardian/index.mjs .",
+    "compliance:audit": "node ../AiAppFactory/tools/compliance-guardian/index.mjs audit .",
+    "version:bump": "node -e \"const fs = require('fs'); const v = JSON.parse(fs.readFileSync('version.json')); const parts = v.version.slice(1).split('.'); parts[2] = String(Number(parts[2]) + 1).padStart(2, '0'); v.version = 'v' + parts.join('.'); fs.writeFileSync('version.json', JSON.stringify(v, null, 2)); console.log(v.version);\""
+  },
+  "keywords": [
+    "auxilio-mecanico",
+    "gruas-remolques",
+    "aseguradoras",
+    "haversine-odometer",
+    "peritaje-vehicular",
+    "split-billing",
+    "screen-wake-lock",
+    "epod"
+  ],
+  "author": "AiAppFactory",
+  "license": "MIT"
+}
