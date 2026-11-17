@@ -616,6 +616,52 @@ async function runAllTests() {
     assert.equal(ver.version, 'v' + pkg.version);
   });
 
+  test('Capa 5.4: renderActaPrintHtml escapa HTML dinámico contra XSS', () => {
+    const xssActa = {
+      actaPayload: {
+        actaId: 'ACTA-<script>alert(1)</script>',
+        sealedAt: '2026-11-17T12:00:00Z',
+        insuranceName: '<img src=x onerror=alert(1)>',
+        plate: 'AB 123 CD',
+        vehicleModel: '<b>Model</b>',
+        driverName: 'Chofer',
+        unitCode: 'MOV-01',
+        originAddress: 'Origen',
+        destinationAddress: 'Destino',
+        kilometers: { towDistanceKm: 10, coveredKm: 10, excessKm: 0 },
+        billing: { insuranceSubtotalArs: 14000, clientExcessKmArs: 0, clientSurchargesArs: 0, clientTotalArs: 0, grandTotalArs: 14000 },
+        damagesList: [{ sector: 'Frente', damageType: 'Golpe', description: '<script>xss</script>' }]
+      },
+      sha256Digest: 'abcd'
+    };
+    const html = TowActaLedgerService.renderActaPrintHtml(xssActa);
+    assert.equal(html.includes('<script>'), false);
+    assert.equal(html.includes('<img src=x'), false);
+    assert.ok(html.includes('&lt;script&gt;'));
+  });
+
+  test('Capa 5.5: PWA Offline-First y CSP estricta sin CDN externo ni unsafe-inline en script-src', () => {
+    const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    const fb = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8'));
+    const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+    assert.equal(html.includes('cdn.tailwindcss.com'), false);
+    assert.ok(html.includes('href="./manifest.json"'));
+    assert.ok(html.includes('href="./styles.css"'));
+    assert.ok(fs.existsSync(path.join(ROOT, 'manifest.json')));
+    assert.ok(fs.existsSync(path.join(ROOT, 'styles.css')));
+    assert.ok(sw.includes('./styles.css'));
+    assert.ok(sw.includes('./src/app.js'));
+    assert.ok(sw.includes('./manifest.json'));
+
+    const headers = fb.hosting.headers;
+    const cspHeader = headers[0].headers.find((h) => h.key === 'Content-Security-Policy');
+    assert.ok(cspHeader);
+    const scriptSrc = cspHeader.value.match(/script-src\s+([^;]+)/)?.[1] || '';
+    assert.equal(scriptSrc.includes("'unsafe-inline'"), false);
+    const swRule = headers.find((h) => h.source === '/sw.js');
+    assert.ok(swRule);
+  });
+
   // Ejecución secuencial controlada
   for (const t of tests) {
     try {

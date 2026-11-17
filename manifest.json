@@ -1,0 +1,19 @@
+{
+  "name": "CraneTrack - Auxilio Mecánico 24/7",
+  "short_name": "CraneTrack",
+  "description": "Despacho 24/7 de grúas, odómetro geodésico Haversine, peritaje pre-enganche y split-billing para aseguradoras.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#ea580c",
+  "lang": "es-AR",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

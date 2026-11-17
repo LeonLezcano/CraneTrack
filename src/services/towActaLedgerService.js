@@ -1,6 +1,7 @@
 // @ts-check
 import { CryptoSeal } from '../utils/cryptoSeal.js';
 import { Formatters } from '../utils/formatters.js';
+import { Sanitizer } from '../utils/sanitizer.js';
 
 /**
  * @fileoverview Tow Acta Ledger Service for CraneTrack (AiAppFactory Standard)
@@ -129,8 +130,9 @@ export class TowActaLedgerService {
    */
   static renderActaPrintHtml(sealedActa) {
     const p = sealedActa.actaPayload;
+    const esc = Sanitizer.escapeHTML;
     const damagesHtml = p.damagesList && p.damagesList.length > 0
-      ? p.damagesList.map((d) => `<li><strong>${d.sector}:</strong> ${d.damageType} — ${d.description || 'Sin notas'}</li>`).join('')
+      ? p.damagesList.map((d) => `<li><strong>${esc(d.sector)}:</strong> ${esc(d.damageType)} - ${esc(d.description || 'Sin notas')}</li>`).join('')
       : '<li><em>Sin daños preexistentes constatados previo al enganche.</em></li>';
 
     return `
@@ -141,18 +143,18 @@ export class TowActaLedgerService {
           <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">Acta Oficial de Traslado Vehicular y Peritaje Pre-Enganche</p>
         </div>
         <div style="text-align: right; font-size: 11px;">
-          <div><strong>Acta Nº:</strong> ${p.actaId}</div>
-          <div><strong>Fecha:</strong> ${Formatters.formatDateTimeAR(p.sealedAt)}</div>
+          <div><strong>Acta Nº:</strong> ${esc(p.actaId)}</div>
+          <div><strong>Fecha:</strong> ${esc(Formatters.formatDateTimeAR(p.sealedAt))}</div>
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-size: 12px; margin-bottom: 14px;">
-        <div><strong>Aseguradora / Convenio:</strong> ${p.insuranceName}</div>
-        <div><strong>Dominio / Patente:</strong> ${p.plate}</div>
-        <div><strong>Vehículo:</strong> ${p.vehicleModel || 'S/D'}</div>
-        <div><strong>Móvil / Chofer:</strong> ${p.unitCode} — ${p.driverName}</div>
-        <div><strong>Origen (Siniestro):</strong> ${p.originAddress}</div>
-        <div><strong>Destino (Taller/Depósito):</strong> ${p.destinationAddress}</div>
+        <div><strong>Aseguradora / Convenio:</strong> ${esc(p.insuranceName)}</div>
+        <div><strong>Dominio / Patente:</strong> ${esc(p.plate)}</div>
+        <div><strong>Vehículo:</strong> ${esc(p.vehicleModel || 'S/D')}</div>
+        <div><strong>Móvil / Chofer:</strong> ${esc(p.unitCode)} - ${esc(p.driverName)}</div>
+        <div><strong>Origen (Siniestro):</strong> ${esc(p.originAddress)}</div>
+        <div><strong>Destino (Taller/Depósito):</strong> ${esc(p.destinationAddress)}</div>
       </div>
 
       <h3 style="font-size: 13px; text-transform: uppercase; color: #334155; margin-bottom: 6px;">1. Liquidación de Kilometraje y Desdoblamiento (Split-Billing)</h3>
@@ -168,27 +170,27 @@ export class TowActaLedgerService {
         <tbody>
           <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 6px;">Acarreo de Línea (Franquicia Póliza)</td>
-            <td style="padding: 6px; text-align: center;">${p.kilometers.coveredKm.toFixed(1)} km</td>
-            <td style="padding: 6px; text-align: right; font-weight: 600;">${Formatters.formatARS(p.billing.insuranceSubtotalArs)}</td>
+            <td style="padding: 6px; text-align: center;">${esc(Number(p.kilometers.coveredKm).toFixed(1))} km</td>
+            <td style="padding: 6px; text-align: right; font-weight: 600;">${esc(Formatters.formatARS(p.billing.insuranceSubtotalArs))}</td>
             <td style="padding: 6px; text-align: right;">-</td>
           </tr>
           <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 6px;">Kilómetros Excedentes</td>
-            <td style="padding: 6px; text-align: center;">${p.kilometers.excessKm.toFixed(1)} km</td>
+            <td style="padding: 6px; text-align: center;">${esc(Number(p.kilometers.excessKm).toFixed(1))} km</td>
             <td style="padding: 6px; text-align: right;">-</td>
-            <td style="padding: 6px; text-align: right; font-weight: 600; color: #c2410c;">${Formatters.formatARS(p.billing.clientExcessKmArs)}</td>
+            <td style="padding: 6px; text-align: right; font-weight: 600; color: #c2410c;">${esc(Formatters.formatARS(p.billing.clientExcessKmArs))}</td>
           </tr>
           <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 6px;">Adicionales de Maniobra (Dolly / Malacate)</td>
             <td style="padding: 6px; text-align: center;">-</td>
             <td style="padding: 6px; text-align: right;">-</td>
-            <td style="padding: 6px; text-align: right; font-weight: 600; color: #c2410c;">${Formatters.formatARS(p.billing.clientSurchargesArs)}</td>
+            <td style="padding: 6px; text-align: right; font-weight: 600; color: #c2410c;">${esc(Formatters.formatARS(p.billing.clientSurchargesArs))}</td>
           </tr>
           <tr style="background: #f8fafc; font-weight: 800;">
             <td style="padding: 8px;">TOTALES</td>
-            <td style="padding: 8px; text-align: center;">${p.kilometers.towDistanceKm.toFixed(1)} km</td>
-            <td style="padding: 8px; text-align: right; color: #1e293b;">${Formatters.formatARS(p.billing.insuranceSubtotalArs)}</td>
-            <td style="padding: 8px; text-align: right; color: #ea580c;">${Formatters.formatARS(p.billing.clientTotalArs)}</td>
+            <td style="padding: 8px; text-align: center;">${esc(Number(p.kilometers.towDistanceKm).toFixed(1))} km</td>
+            <td style="padding: 8px; text-align: right; color: #1e293b;">${esc(Formatters.formatARS(p.billing.insuranceSubtotalArs))}</td>
+            <td style="padding: 8px; text-align: right; color: #ea580c;">${esc(Formatters.formatARS(p.billing.clientTotalArs))}</td>
           </tr>
         </tbody>
       </table>
@@ -203,7 +205,7 @@ export class TowActaLedgerService {
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 11px; text-align: center;">
         <div>
           <div style="height: 40px; border-bottom: 1px dashed #94a3b8; margin-bottom: 4px;"></div>
-          Firma Conductor / Titular Vehículo
+          Firma Conductor / Titular (${esc(p.clientSignature || 'NO_REGISTRADA')})
         </div>
         <div>
           <div style="height: 40px; border-bottom: 1px dashed #94a3b8; margin-bottom: 4px;"></div>
@@ -211,13 +213,13 @@ export class TowActaLedgerService {
         </div>
         <div>
           <div style="height: 40px; border-bottom: 1px dashed #94a3b8; margin-bottom: 4px;"></div>
-          Firma Recepción Taller / Garaje
+          Firma Recepción Taller (${esc(p.receiverSignature || 'NO_REGISTRADA')})
         </div>
       </div>
 
       <div style="margin-top: 24px; padding: 8px 12px; background: #f1f5f9; border-radius: 4px; font-family: monospace; font-size: 10px; color: #475569; word-break: break-all;">
         <strong>SELLO CRIPTOGRÁFICO DE SEGURIDAD (SHA-256):</strong><br>
-        ${sealedActa.sha256Digest}
+        ${esc(sealedActa.sha256Digest)}
       </div>
     </div>`;
   }

@@ -1,9 +1,14 @@
-// CraneTrack Service Worker v1.0.00
-const CACHE_NAME = 'cranetrack-v1.0.00';
+// CraneTrack Service Worker v1.0.01
+const CACHE_NAME = 'cranetrack-v1.0.01';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './styles.css',
+  './manifest.json',
+  './icon.svg',
   './version.json',
+  './src/sw-register.js',
+  './src/app.js',
   './src/core/towMileageTariffEngine.js',
   './src/core/preTowVisualInspectionEngine.js',
   './src/core/fleetEmergencyDispatcherEngine.js',
@@ -32,9 +37,19 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fetchPromise = fetch(e.request)
+
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  const isNetworkFirst =
+    e.request.mode === 'navigate' ||
+    url.pathname.endsWith('/index.html') ||
+    url.pathname.endsWith('/version.json') ||
+    url.pathname.endsWith('/sw.js');
+
+  if (isNetworkFirst) {
+    e.respondWith(
+      fetch(e.request)
         .then((networkRes) => {
           if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
             const clone = networkRes.clone();
@@ -42,8 +57,21 @@ self.addEventListener('fetch', (e) => {
           }
           return networkRes;
         })
-        .catch(() => cached);
-      return cached || fetchPromise;
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  e.respondWith(
+    caches.match(e.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(e.request).then((networkRes) => {
+        if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        }
+        return networkRes;
+      });
     })
   );
 });

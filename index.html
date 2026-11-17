@@ -3,115 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CraneTrack • Auxilios, Remolques 24/7 & Split-Billing</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚛</text></svg>">
-  <link rel="manifest" href="version.json">
+  <title>CraneTrack - Auxilios, Remolques 24/7 y Split-Billing</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#ea580c">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @media print {
-      body * { visibility: hidden !important; }
-      #printContainer, #printContainer * { visibility: visible !important; }
-      #printContainer { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-      .no-print { display: none !important; }
-    }
-    .nav-tab.active {
-      background-color: #ea580c;
-      color: #ffffff;
-      border-color: #ea580c;
-    }
-  </style>
+  <link rel="stylesheet" href="./styles.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-orange-600 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans text-sm selection:bg-orange-600 selection:text-white">
 
   <!-- Header Barra Superior -->
   <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 no-print">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-lg shadow-orange-900/40">
-          🚛
-        </div>
+        <span class="w-10 h-10 bg-orange-600 rounded-lg inline-flex items-center justify-center text-white shrink-0" aria-hidden="true">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 17h4V5H2v12h3"/>
+            <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/>
+            <circle cx="7.5" cy="17.5" r="2.5"/>
+            <circle cx="17.5" cy="17.5" r="2.5"/>
+          </svg>
+        </span>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-lg font-black tracking-wider text-slate-100 uppercase">CraneTrack</h1>
-            <span class="bg-orange-950 text-orange-400 border border-orange-800 text-[10px] font-bold px-2 py-0.5 rounded-full">v1.0.00</span>
-          </div>
-          <p class="text-xs text-slate-400 hidden sm:block">Auxilio Mecánico 24/7 • Odómetro Haversine & Split-Billing Aseguradoras</p>
+          <h1 class="text-2xl font-bold tracking-tight text-slate-100 uppercase leading-none">CraneTrack</h1>
+          <p class="text-xs text-slate-300 mt-1">Auxilio Mecánico 24/7, Odómetro Haversine y Split-Billing <span id="appVersionMeta" class="text-slate-400 font-mono">v1.0.01</span></p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
-      <nav class="flex items-center gap-1.5 overflow-x-auto py-1">
-        <button data-tab="dispatch" class="nav-tab active px-3.5 py-1.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 transition flex items-center gap-1.5">
-          <span>🚨</span> Despacho 24/7
+      <nav aria-label="Vistas principales" role="tablist" class="flex flex-wrap items-center gap-2">
+        <button id="tab-btn-dispatch" type="button" role="tab" aria-selected="true" aria-controls="tab-dispatch" data-tab="dispatch"
+          class="nav-tab active min-h-[44px] px-3.5 py-2.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-200 transition inline-flex items-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span>Despacho 24/7</span>
         </button>
-        <button data-tab="calculator" class="nav-tab px-3.5 py-1.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 transition flex items-center gap-1.5">
-          <span>🚗</span> Nuevo Auxilio
+        <button id="tab-btn-calculator" type="button" role="tab" aria-selected="false" aria-controls="tab-calculator" data-tab="calculator"
+          class="nav-tab min-h-[44px] px-3.5 py-2.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-200 transition inline-flex items-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14"/><path d="M5 12h14"/>
+          </svg>
+          <span>Nuevo Auxilio</span>
         </button>
-        <button data-tab="inspection" class="nav-tab px-3.5 py-1.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 transition flex items-center gap-1.5">
-          <span>📸</span> Peritaje Daños
+        <button id="tab-btn-inspection" type="button" role="tab" aria-selected="false" aria-controls="tab-inspection" data-tab="inspection"
+          class="nav-tab min-h-[44px] px-3.5 py-2.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-200 transition inline-flex items-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          <span>Peritaje Daños</span>
         </button>
-        <button data-tab="cab-mode" class="nav-tab px-3.5 py-1.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 transition flex items-center gap-1.5">
-          <span>📱</span> Modo Cabina
+        <button id="tab-btn-cab-mode" type="button" role="tab" aria-selected="false" aria-controls="tab-cab-mode" data-tab="cab-mode"
+          class="nav-tab min-h-[44px] px-3.5 py-2.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-200 transition inline-flex items-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>
+          </svg>
+          <span>Modo Cabina</span>
         </button>
-        <button data-tab="reports" class="nav-tab px-3.5 py-1.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 transition flex items-center gap-1.5">
-          <span>📊</span> Liquidación
+        <button id="tab-btn-reports" type="button" role="tab" aria-selected="false" aria-controls="tab-reports" data-tab="reports"
+          class="nav-tab min-h-[44px] px-3.5 py-2.5 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-200 transition inline-flex items-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/>
+          </svg>
+          <span>Liquidación</span>
         </button>
       </nav>
     </div>
   </header>
 
   <!-- Contenedor Principal -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full no-print">
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-5 no-print">
+
+    <!-- Banner de estado no bloqueante -->
+    <div id="appStatusBanner" role="status" aria-live="polite" class="hidden rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 flex items-center justify-between gap-3">
+      <p id="appStatusMessage" class="text-sm text-slate-100 font-medium"></p>
+      <button id="btnCloseStatusBanner" type="button" aria-label="Cerrar aviso" class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+        <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
 
     <!-- 1. VISTA: Centro de Despacho 24/7 -->
-    <section id="tab-dispatch" class="tab-content space-y-6">
-      <!-- Tarjetas KPI -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <section id="tab-dispatch" role="tabpanel" aria-labelledby="tab-btn-dispatch" class="tab-content space-y-6">
+      <!-- Tarjetas KPI dinámicas desde CraneTrackCacheService -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400 font-medium">Móviles de Guardia</div>
-          <div class="text-2xl font-black text-slate-100 mt-1">6 / 8</div>
-          <div class="text-[11px] text-emerald-400 mt-0.5">● Operativos en calle</div>
+          <div class="text-xs text-slate-300 font-medium">Móviles Asignados</div>
+          <div id="kpiAssignedUnits" class="text-2xl font-black text-slate-100 mt-1 font-mono">0 / 5</div>
+          <div id="kpiAssignedUnitsMeta" class="text-xs text-slate-400 mt-1">Sin órdenes activas</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400 font-medium">Auxilios en Curso</div>
-          <div class="text-2xl font-black text-orange-400 mt-1">3</div>
-          <div class="text-[11px] text-orange-300 mt-0.5">1 en siniestro, 2 en ruta</div>
+          <div class="text-xs text-slate-300 font-medium">Auxilios en Curso</div>
+          <div id="kpiActiveOrders" class="text-2xl font-black text-orange-400 mt-1 font-mono">0</div>
+          <div id="kpiActiveOrdersMeta" class="text-xs text-slate-400 mt-1">0 en siniestro, 0 en ruta</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400 font-medium">Cumplimiento SLA</div>
-          <div class="text-2xl font-black text-emerald-400 mt-1">94.8%</div>
-          <div class="text-[11px] text-slate-400 mt-0.5">Llegada &lt; 45 minutos</div>
+          <div class="text-xs text-slate-300 font-medium">Cumplimiento SLA Local</div>
+          <div id="kpiSlaCompliance" class="text-2xl font-black text-emerald-400 mt-1 font-mono">--</div>
+          <div id="kpiSlaComplianceMeta" class="text-xs text-slate-400 mt-1">Calculado sobre órdenes guardadas</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-          <div class="text-xs text-slate-400 font-medium">Excedentes en Ruta</div>
-          <div class="text-2xl font-black text-slate-100 mt-1">$ 142.500</div>
-          <div class="text-[11px] text-emerald-400 mt-0.5">Cobrados con QR 3.0</div>
+          <div class="text-xs text-slate-300 font-medium">Excedentes Liquidados</div>
+          <div id="kpiClientExcessTotal" class="text-2xl font-black text-slate-100 mt-1 font-mono">$ 0,00</div>
+          <div id="kpiClientExcessMeta" class="text-xs text-slate-400 mt-1">0 actas selladas</div>
         </div>
       </div>
 
       <!-- Tabla de Despacho Activo -->
-      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="font-bold text-base text-slate-100">Órdenes de Auxilio Activas</h2>
-            <p class="text-xs text-slate-400">Monitoreo satelital y tiempos de arribo</p>
+            <h2 class="font-bold text-lg text-slate-100">Órdenes de Auxilio Activas</h2>
+            <p class="text-xs text-slate-300">Registro operativo local y seguimiento de SLA</p>
           </div>
-          <button id="btnOpenNewTow" class="bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-md shadow-orange-950/40">
-            + Nuevo Pedido de Grúa
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btnPurgeDemo" type="button" class="min-h-[44px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3.5 py-2.5 rounded-lg transition">
+              Limpiar Datos Locales / Demo
+            </button>
+            <button id="btnOpenNewTow" type="button" class="min-h-[44px] bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition inline-flex items-center gap-1.5">
+              <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14"/><path d="M5 12h14"/>
+              </svg>
+              <span>Nuevo Pedido de Grúa</span>
+            </button>
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
-                <th class="py-3 px-4">Orden</th>
-                <th class="py-3 px-4">Vehículo</th>
-                <th class="py-3 px-4">Aseguradora & Ubicación</th>
-                <th class="py-3 px-4">Móvil Asignado</th>
-                <th class="py-3 px-4 text-center">SLA Restante</th>
-                <th class="py-3 px-4 text-center">Estado</th>
-                <th class="py-3 px-4 text-center">Acciones</th>
+              <tr class="bg-slate-950 border-b border-slate-800 text-slate-300 uppercase text-xs tracking-wider">
+                <th scope="col" class="py-3 px-4">Orden</th>
+                <th scope="col" class="py-3 px-4">Vehículo</th>
+                <th scope="col" class="py-3 px-4">Aseguradora y Ubicación</th>
+                <th scope="col" class="py-3 px-4">Móvil Asignado</th>
+                <th scope="col" class="py-3 px-4 text-center">SLA Transcurrido</th>
+                <th scope="col" class="py-3 px-4 text-center">Estado</th>
+                <th scope="col" class="py-3 px-4 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody id="tblDispatchBody">
@@ -123,32 +150,34 @@
     </section>
 
     <!-- 2. VISTA: Nuevo Auxilio & Calculador Split-Billing -->
-    <section id="tab-calculator" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <section id="tab-calculator" role="tabpanel" aria-labelledby="tab-btn-calculator" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Formulario de Pedido -->
-      <div class="lg:col-span-7 bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
+      <div class="lg:col-span-7 bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-5">
         <div class="border-b border-slate-800 pb-3">
-          <h2 class="font-bold text-base text-slate-100">Registrar y Despachar Auxilio</h2>
-          <p class="text-xs text-slate-400">Cálculo geodésico Haversine y desdoblamiento de póliza</p>
+          <h2 class="font-bold text-lg text-slate-100">Registrar y Despachar Auxilio</h2>
+          <p class="text-xs text-slate-300">Cálculo geodésico Haversine y desdoblamiento de póliza</p>
         </div>
 
-        <form id="formNewTow" class="space-y-4">
+        <form id="formNewTow" class="space-y-4" novalidate>
+          <div id="calcFormError" role="alert" class="hidden rounded-lg bg-red-950 border border-red-800 px-3 py-2.5 text-xs text-red-200 font-medium"></div>
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Dominio / Patente</label>
+              <label for="inpPlate" class="block text-xs font-medium text-slate-300 mb-1.5">Dominio / Patente</label>
               <input type="text" id="inpPlate" placeholder="ej. AF 123 CD o GHI 456" required
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono uppercase focus:border-orange-500 focus:outline-none">
+                class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 font-mono uppercase focus:border-orange-500">
             </div>
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Modelo de Vehículo</label>
+              <label for="inpModel" class="block text-xs font-medium text-slate-300 mb-1.5">Modelo de Vehículo</label>
               <input type="text" id="inpModel" placeholder="ej. Toyota Hilux 4x4 / Ford Ka" required
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:border-orange-500 focus:outline-none">
+                class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Compañía Aseguradora</label>
-              <select id="selInsurance" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:border-orange-500 focus:outline-none">
+              <label for="selInsurance" class="block text-xs font-medium text-slate-300 mb-1.5">Compañía Aseguradora</label>
+              <select id="selInsurance" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
                 <option value="LA_SEGUNDA">La Segunda Seguros (100 km cubiertos)</option>
                 <option value="FED_PATRONAL">Federación Patronal (100 km cubiertos)</option>
                 <option value="SAN_CRISTOBAL">San Cristóbal Seguros (150 km cubiertos)</option>
@@ -158,323 +187,395 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Móvil / Grúa de Asignación</label>
-              <select id="selUnit" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:border-orange-500 focus:outline-none">
-                <option value="MOV-01 (Plancha)">MOV-01 — Plancha Hidráulica Liviana (Ford F-4000)</option>
-                <option value="MOV-02 (Plancha+Dolly)">MOV-02 — Plancha con Carros Dolly (Mercedes Accelo)</option>
-                <option value="MOV-04 (Plancha Pesada)">MOV-04 — Plancha Reforzada 4x4 (Iveco Tector)</option>
-                <option value="MOV-09 (Grúa Horquilla)">MOV-09 — Grúa Horquilla Pesada Colectivos (Scania)</option>
-                <option value="MOV-10 (Baja Altura)">MOV-10 — Rescate Subsuelos Garage &lt; 2.00m (Toyota)</option>
+              <label for="selUnit" class="block text-xs font-medium text-slate-300 mb-1.5">Móvil / Grúa de Asignación</label>
+              <select id="selUnit" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
+                <option value="MOV-01 (Plancha)">MOV-01 - Plancha Hidráulica Liviana (Ford F-4000)</option>
+                <option value="MOV-02 (Plancha+Dolly)">MOV-02 - Plancha con Carros Dolly (Mercedes Accelo)</option>
+                <option value="MOV-04 (Plancha Pesada)">MOV-04 - Plancha Reforzada 4x4 (Iveco Tector)</option>
+                <option value="MOV-09 (Grúa Horquilla)">MOV-09 - Grúa Horquilla Pesada Colectivos (Scania)</option>
+                <option value="MOV-10 (Baja Altura)">MOV-10 - Rescate Subsuelos Garage &lt; 2.00m (Toyota)</option>
               </select>
             </div>
           </div>
 
           <!-- Puntos Geodésicos -->
-          <div class="space-y-3 pt-2 border-t border-slate-800/80">
+          <div class="space-y-4 pt-3 border-t border-slate-800">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Preseteo Origen (Siniestro)</label>
-                <select id="calcOriginPreset" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200">
+              <div class="space-y-2">
+                <label for="calcOriginPreset" class="block text-xs font-medium text-slate-300">Preseteo Origen (Siniestro)</label>
+                <select id="calcOriginPreset" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
                   <option value="CAMPANA">Ruta 9 Km 74 (Campana)</option>
                   <option value="ZARATE">Ruta 9 / Zárate</option>
                   <option value="PILAR">Panamericana Ramal Pilar Km 50</option>
                   <option value="UNICENTER">Shopping Unicenter (Martínez)</option>
                   <option value="DOLORES">Autovía 2 Km 210 (Dolores)</option>
                 </select>
-                <input type="text" id="inpOriginAddress" value="Ruta 9 Km 74 (Campana)" class="mt-1 w-full bg-slate-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-300">
+                <label for="inpOriginAddress" class="block text-xs font-medium text-slate-400">Dirección Exacta de Origen</label>
+                <input type="text" id="inpOriginAddress" value="Ruta 9 Km 74 (Campana)" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
               </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Preseteo Destino (Taller/Domicilio)</label>
-                <select id="calcDestPreset" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200">
+              <div class="space-y-2">
+                <label for="calcDestPreset" class="block text-xs font-medium text-slate-300">Preseteo Destino (Taller/Domicilio)</label>
+                <select id="calcDestPreset" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
                   <option value="CABA">Taller Central CABA (Warnes)</option>
                   <option value="PILAR">Taller Oficial Pilar</option>
                   <option value="ZARATE">Taller Oficial Zárate</option>
                   <option value="BASE_CENTRAL">Base Central Pacheco</option>
                 </select>
-                <input type="text" id="inpDestAddress" value="Taller Central CABA (Warnes)" class="mt-1 w-full bg-slate-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-300">
+                <label for="inpDestAddress" class="block text-xs font-medium text-slate-400">Dirección Exacta de Destino</label>
+                <input type="text" id="inpDestAddress" value="Taller Central CABA (Warnes)" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Distancia Acarreo Directo (Haversine km)</label>
-              <input type="number" id="calcTowKm" value="74.2" step="0.1" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-orange-400 font-mono font-bold focus:border-orange-500 focus:outline-none">
+              <label for="calcTowKm" class="block text-xs font-medium text-slate-300 mb-1.5">Distancia Acarreo Directo (Haversine km)</label>
+              <input type="number" id="calcTowKm" value="74.2" min="0.1" step="0.1" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-orange-400 font-mono font-bold focus:border-orange-500">
             </div>
           </div>
 
-          <!-- Adicionales de Maniobra -->
-          <div class="pt-2 border-t border-slate-800/80">
-            <label class="block text-xs font-medium text-slate-300 mb-2">Maniobras Complejas & Adicionales de Rescate</label>
+          <!-- Adicionales de Maniobra (sin bordes anidados) -->
+          <div class="pt-3 border-t border-slate-800">
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider mb-2.5">Maniobras Complejas y Adicionales</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <label class="flex items-center gap-2 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
-                <input type="checkbox" id="chkWinch" class="accent-orange-600 rounded">
-                <span>Extracción Zanja / Barro (+$45.000)</span>
+              <label for="chkWinch" class="flex items-center gap-3 min-h-[44px] px-3 py-2 bg-slate-950 rounded-lg cursor-pointer hover:bg-slate-800 transition">
+                <input type="checkbox" id="chkWinch" class="w-5 h-5 accent-orange-600 rounded shrink-0">
+                <span class="text-slate-200">Extracción Zanja / Barro (+$45.000)</span>
               </label>
-              <label class="flex items-center gap-2 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
-                <input type="checkbox" id="chkDolly" class="accent-orange-600 rounded">
-                <span>Patines Dolly / Rueda Trabada (+$35.000)</span>
+              <label for="chkDolly" class="flex items-center gap-3 min-h-[44px] px-3 py-2 bg-slate-950 rounded-lg cursor-pointer hover:bg-slate-800 transition">
+                <input type="checkbox" id="chkDolly" class="w-5 h-5 accent-orange-600 rounded shrink-0">
+                <span class="text-slate-200">Patines Dolly / Rueda Trabada (+$35.000)</span>
               </label>
-              <label class="flex items-center gap-2 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
-                <input type="checkbox" id="chkUnderground" class="accent-orange-600 rounded">
-                <span>Rescate Subsuelo &lt;2.10m (+$40.000)</span>
+              <label for="chkUnderground" class="flex items-center gap-3 min-h-[44px] px-3 py-2 bg-slate-950 rounded-lg cursor-pointer hover:bg-slate-800 transition">
+                <input type="checkbox" id="chkUnderground" class="w-5 h-5 accent-orange-600 rounded shrink-0">
+                <span class="text-slate-200">Rescate Subsuelo &lt;2.10m (+$40.000)</span>
               </label>
-              <label class="flex items-center gap-2 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
-                <input type="checkbox" id="chkNight" class="accent-orange-600 rounded">
-                <span>Nocturno / Feriado (+20%)</span>
+              <label for="chkNight" class="flex items-center gap-3 min-h-[44px] px-3 py-2 bg-slate-950 rounded-lg cursor-pointer hover:bg-slate-800 transition">
+                <input type="checkbox" id="chkNight" class="w-5 h-5 accent-orange-600 rounded shrink-0">
+                <span class="text-slate-200">Nocturno / Feriado (+20%)</span>
               </label>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4 pt-1">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-800">
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Chofer a Cargo</label>
-              <input type="text" id="inpDriver" value="Carlos Maidana" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200">
+              <label for="inpDriver" class="block text-xs font-medium text-slate-300 mb-1.5">Chofer a Cargo</label>
+              <input type="text" id="inpDriver" value="Carlos Maidana" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
             </div>
             <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Horas Espera Comisaría/Peaje</label>
-              <input type="number" id="inpWaitHours" value="0" step="0.5" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 font-mono">
+              <label for="inpClientPhone" class="block text-xs font-medium text-slate-300 mb-1.5">Teléfono Titular</label>
+              <input type="tel" id="inpClientPhone" placeholder="ej. +54 11 5555-1234" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 font-mono focus:border-orange-500">
+            </div>
+            <div>
+              <label for="inpWaitHours" class="block text-xs font-medium text-slate-300 mb-1.5">Horas Espera</label>
+              <input type="number" id="inpWaitHours" value="0" min="0" step="0.5" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 font-mono focus:border-orange-500">
             </div>
           </div>
 
-          <button type="submit" class="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-orange-950/40 transition">
-            🚀 Confirmar & Despachar Grúa
+          <button type="submit" class="w-full min-h-[48px] py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm rounded-xl transition inline-flex items-center justify-center gap-2">
+            <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+            </svg>
+            <span>Confirmar y Despachar Grúa</span>
           </button>
         </form>
       </div>
 
-      <!-- Tarjeta Resumen Split-Billing -->
-      <div class="lg:col-span-5 space-y-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-xl space-y-4">
-          <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-            <h3 class="font-bold text-sm text-slate-200 uppercase tracking-wider">Desdoblamiento Split-Billing</h3>
-            <span class="text-[11px] bg-slate-800 text-orange-400 font-mono px-2 py-0.5 rounded">En Vivo</span>
+      <!-- Tarjeta Resumen Split-Billing (jerarquía plana con divisores) -->
+      <div class="lg:col-span-5">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+          <div class="border-b border-slate-800 pb-3 flex items-center justify-between gap-2">
+            <h3 class="font-bold text-sm text-slate-100 uppercase tracking-wider">Desdoblamiento Split-Billing</h3>
+            <span class="text-xs text-slate-400 font-mono">Cálculo local</span>
           </div>
 
-          <div class="space-y-3 text-xs">
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
-              <span class="text-slate-400">Km Franquicia Cubiertos:</span>
-              <span id="previewCoveredKm" class="font-mono font-bold text-emerald-400">100.0 km</span>
+          <div class="divide-y divide-slate-800 text-xs">
+            <div class="flex justify-between items-center py-2.5">
+              <span class="text-slate-300">Km Franquicia Cubiertos:</span>
+              <span id="previewCoveredKm" class="font-mono font-bold text-emerald-400">0.0 km</span>
             </div>
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
-              <span class="text-slate-400">Km Excedentes Particular:</span>
+            <div class="flex justify-between items-center py-2.5">
+              <span class="text-slate-300">Km Excedentes Particular:</span>
               <span id="previewExcessKm" class="font-mono font-bold text-orange-400">0.0 km</span>
             </div>
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
-              <span class="text-slate-400">Subtotal Aseguradora:</span>
-              <span id="previewInsuranceArs" class="font-mono font-bold text-slate-100">$ 103.880,00</span>
+            <div class="flex justify-between items-center py-2.5">
+              <span class="text-slate-300">Subtotal Aseguradora:</span>
+              <span id="previewInsuranceArs" class="font-mono font-bold text-slate-100">$ 0,00</span>
             </div>
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
-              <span class="text-slate-400">Excedente Km Particular:</span>
+            <div class="flex justify-between items-center py-2.5">
+              <span class="text-slate-300">Excedente Km Particular:</span>
               <span id="previewClientKmArs" class="font-mono font-bold text-orange-400">$ 0,00</span>
             </div>
-            <div class="flex justify-between items-center py-1.5 border-b border-slate-800">
-              <span class="text-slate-400">Adicionales Maniobra:</span>
+            <div class="flex justify-between items-center py-2.5">
+              <span class="text-slate-300">Adicionales Maniobra:</span>
               <span id="previewClientSurchargesArs" class="font-mono font-bold text-orange-400">$ 0,00</span>
             </div>
+          </div>
 
-            <div class="pt-2">
-              <div class="bg-orange-950/40 border border-orange-800/80 p-4 rounded-xl text-center">
-                <div class="text-[11px] uppercase tracking-wider text-orange-300 font-bold">Total a Cobrar al Asegurado en Ruta</div>
-                <div id="previewClientTotalArs" class="text-3xl font-black text-orange-400 font-mono mt-1">$ 0,00</div>
-                <div class="text-[10px] text-orange-300/80 mt-1">Exigir pago antes de descargar el vehículo de la plancha</div>
-              </div>
+          <div class="border-t border-slate-800 pt-4 text-center space-y-1">
+            <div class="text-xs uppercase tracking-wider text-orange-300 font-bold">Total a Cobrar al Asegurado en Ruta</div>
+            <div id="previewClientTotalArs" class="text-3xl font-black text-orange-400 font-mono">$ 0,00</div>
+            <p class="text-xs text-orange-200">Validar cobro antes de descargar el vehículo de la plancha</p>
+          </div>
+
+          <!-- Simulación QR BCRA 3.0 declarada explícitamente como [MOCK] -->
+          <div class="border-t border-slate-800 pt-4 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-slate-200">[MOCK] Payload QR Interoperable (BCRA 3.0)</span>
+              <span class="text-xs font-mono text-amber-300 bg-amber-950 px-2 py-0.5 rounded-md">Simulación local</span>
             </div>
-
-            <!-- Simulación QR BCRA 3.0 -->
-            <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center gap-3">
-              <div class="w-14 h-14 bg-white p-1 rounded flex items-center justify-center shrink-0">
-                <div class="w-full h-full bg-slate-950 flex items-center justify-center text-white text-[8px] font-mono">
-                  [QR 3.0]
-                </div>
-              </div>
-              <div class="text-[11px] text-slate-400">
-                <strong class="text-slate-200">Cobro Interoperable QR:</strong><br>
-                Acepta Mercado Pago, Cuenta DNI, BNA+, MODO y cualquier app bancaria sin recargo.
-              </div>
+            <p class="text-xs text-slate-300">
+              Cadena EMVCo generada localmente sin pasarela de cobro conectada ni generación de imagen QR activa.
+            </p>
+            <div id="previewQrString" class="text-xs font-mono text-slate-300 bg-slate-950 p-2.5 rounded-lg break-all">
+              00020101021243650014AR.GOB.BCRA.INTEROP...
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 3. VISTA: Peritaje de Daños Pre-Enganche -->
-    <section id="tab-inspection" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-5 shadow-xl">
-        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+    <!-- 3. VISTA: Peritaje de Daños Pre-Enganche (paneles hermanos planos) -->
+    <section id="tab-inspection" role="tabpanel" aria-labelledby="tab-btn-inspection" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 id="inspectionOrderHeader" class="font-bold text-base text-slate-100">Peritaje Visual Pre-Enganche</h2>
-            <p class="text-xs text-slate-400">Relevamiento de daños previos para blindaje ante reclamos fraudulentos</p>
+            <h2 id="inspectionOrderHeader" class="font-bold text-lg text-slate-100">Peritaje Visual Pre-Enganche</h2>
+            <p class="text-xs text-slate-300">Relevamiento de daños previos y protocolo mecánico obligatorio antes de accionar el malacate</p>
           </div>
-          <span class="bg-amber-950 text-amber-300 border border-amber-800 text-xs px-2.5 py-1 rounded-full font-bold">
-            Mandatorio Antes de Enganchar
-          </span>
+          <div class="w-full sm:w-72">
+            <label for="selInspectionOrder" class="block text-xs font-medium text-slate-300 mb-1">Orden a Peritar</label>
+            <select id="selInspectionOrder" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:border-orange-500"></select>
+          </div>
         </div>
+        <div id="inspectionEmptyState" class="hidden border-t border-slate-800 pt-4 text-sm text-slate-300">
+          No hay órdenes registradas para peritar. Registre un pedido en <strong>Nuevo Auxilio</strong> para iniciar un peritaje.
+        </div>
+      </div>
 
-        <!-- Checklist de Seguridad Mecánica -->
-        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
-          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Protocolo de Seguridad Vehicular</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+      <!-- Checklist de Seguridad Mecánica -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-2.5">Protocolo de Seguridad Vehicular</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label for="selTransmission" class="block text-slate-300 font-medium mb-1.5">Transmisión</label>
+            <select id="selTransmission" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
+              <option value="MANUAL">Caja Manual</option>
+              <option value="AUTOMATIC">Caja Automática (Exige Dolly)</option>
+            </select>
+          </div>
+          <div>
+            <label for="selDriveType" class="block text-slate-300 font-medium mb-1.5">Tracción</label>
+            <select id="selDriveType" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
+              <option value="FWD">Delantera (FWD)</option>
+              <option value="RWD">Trasera (RWD)</option>
+              <option value="AWD_4X4">Integral / 4x4 (Exige Dolly)</option>
+            </select>
+          </div>
+          <div class="space-y-2 pt-1">
+            <label for="chkHasKeys" class="flex items-center gap-3 min-h-[44px] px-2 cursor-pointer text-slate-200">
+              <input type="checkbox" id="chkHasKeys" checked class="w-5 h-5 accent-orange-600 rounded shrink-0">
+              <span>Llaves entregadas</span>
+            </label>
+            <label for="chkSteeringLocked" class="flex items-center gap-3 min-h-[44px] px-2 cursor-pointer text-slate-200">
+              <input type="checkbox" id="chkSteeringLocked" class="w-5 h-5 accent-orange-600 rounded shrink-0">
+              <span>Dirección bloqueada</span>
+            </label>
+            <label for="chkWheelsBlocked" class="flex items-center gap-3 min-h-[44px] px-2 cursor-pointer text-slate-200">
+              <input type="checkbox" id="chkWheelsBlocked" class="w-5 h-5 accent-orange-600 rounded shrink-0">
+              <span>Ruedas destruidas / trabadas</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registro de Daños de 5 Cuadrantes -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-6 bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+          <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-2.5">Registrar Daño Constatado</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div>
-              <label class="block text-slate-400 mb-1">Transmisión</label>
-              <select id="selTransmission" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                <option value="MANUAL">Caja Manual</option>
-                <option value="AUTOMATIC">Caja Automática (Exige Dolly)</option>
+              <label for="selDamageSector" class="block text-slate-300 font-medium mb-1.5">Cuadrante / Sector</label>
+              <select id="selDamageSector" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
+                <option value="Frente">Frente (Ópticas/Paragolpes)</option>
+                <option value="Lateral Izquierdo">Lateral Izquierdo (Puertas)</option>
+                <option value="Lateral Derecho">Lateral Derecho (Puertas)</option>
+                <option value="Trasera">Trasera (Baúl/Portón)</option>
+                <option value="Bajos / Tren Delantero">Bajos / Cárter / Tren</option>
               </select>
             </div>
             <div>
-              <label class="block text-slate-400 mb-1">Tracción</label>
-              <select id="selDriveType" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                <option value="FWD">Delantera (FWD)</option>
-                <option value="RWD">Trasera (RWD)</option>
-                <option value="AWD_4X4">Integral / 4x4 (Exige Dolly)</option>
+              <label for="selDamageType" class="block text-slate-300 font-medium mb-1.5">Tipo de Daño</label>
+              <select id="selDamageType" class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
+                <option value="Abolladura">Abolladura / Golpe</option>
+                <option value="Rayón Profundo">Rayón / Raspón</option>
+                <option value="Óptica Rota">Óptica / Vidrio Roto</option>
+                <option value="Faltante de Pieza">Faltante de Pieza</option>
+                <option value="Pérdida de Aceite">Pérdida de Aceite</option>
               </select>
             </div>
-            <div class="space-y-1.5 pt-4">
-              <label class="flex items-center gap-2 cursor-pointer text-slate-300">
-                <input type="checkbox" id="chkHasKeys" checked class="accent-orange-600 rounded">
-                <span>Llaves entregadas</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer text-slate-300">
-                <input type="checkbox" id="chkSteeringLocked" class="accent-orange-600 rounded">
-                <span>Dirección bloqueada</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer text-slate-300">
-                <input type="checkbox" id="chkWheelsBlocked" class="accent-orange-600 rounded">
-                <span>Ruedas destruidas / trabadas</span>
-              </label>
-            </div>
           </div>
+          <div>
+            <label for="inpDamageNotes" class="block text-xs text-slate-300 font-medium mb-1.5">Detalle Adicional</label>
+            <input type="text" id="inpDamageNotes" placeholder="Detalle adicional (ej. rayón de 15cm en zócalo)"
+              class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
+          </div>
+          <button id="btnAddDamage" type="button" class="w-full min-h-[44px] py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-bold rounded-lg transition">
+            + Agregar Daño a la Ficha
+          </button>
         </div>
 
-        <!-- Registro de Daños de 5 Cuadrantes -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-6 space-y-3">
-            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Registrar Daño Constatado</h3>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <label class="block text-slate-400 mb-1">Cuadrante / Sector</label>
-                <select id="selDamageSector" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200">
-                  <option value="Frente">Frente (Ópticas/Paragolpes)</option>
-                  <option value="Lateral Izquierdo">Lateral Izquierdo (Puertas)</option>
-                  <option value="Lateral Derecho">Lateral Derecho (Puertas)</option>
-                  <option value="Trasera">Trasera (Baúl/Portón)</option>
-                  <option value="Bajos / Tren Delantero">Bajos / Cárter / Tren</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-slate-400 mb-1">Tipo de Daño</label>
-                <select id="selDamageType" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200">
-                  <option value="Abolladura">Abolladura / Golpe</option>
-                  <option value="Rayón Profundo">Rayón / Raspón</option>
-                  <option value="Óptica Rota">Óptica / Vidrio Roto</option>
-                  <option value="Faltante de Pieza">Faltante de Pieza</option>
-                  <option value="Pérdida de Aceite">Pérdida de Aceite</option>
-                </select>
-              </div>
+        <div class="lg:col-span-6 bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+          <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-2.5">Daños Asentados en este Auxilio</h3>
+          <div id="damagesListContainer" class="max-h-56 overflow-y-auto divide-y divide-slate-800">
+            <div class="text-xs text-slate-400 py-2">No se han registrado daños preexistentes aún.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Firma Digital en Pantalla y Sellado SHA-256 -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-2.5">Conformidad del Titular y Sellado Criptográfico</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <label for="signatureCanvas" class="text-xs font-medium text-slate-300">Firma en Pantalla del Conductor / Titular</label>
+              <span id="signatureStatus" class="text-xs text-slate-400 font-mono">Sin trazo registrado</span>
             </div>
-            <div>
-              <input type="text" id="inpDamageNotes" placeholder="Detalle adicional (ej. rayón de 15cm en zócalo)"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200">
-            </div>
-            <button id="btnAddDamage" class="w-full py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-bold rounded-lg transition">
-              + Agregar Daño a la Ficha
+            <canvas id="signatureCanvas" width="480" height="140" aria-label="Área de firma digital del titular"
+              class="w-full h-36 bg-slate-950 border border-slate-700 rounded-lg touch-none cursor-crosshair"></canvas>
+            <button id="btnClearSignature" type="button" class="min-h-[44px] px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition">
+              Limpiar Firma
             </button>
           </div>
-
-          <div class="lg:col-span-6 bg-slate-950 border border-slate-800 p-4 rounded-xl">
-            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Daños Asentados en este Auxilio</h3>
-            <div id="damagesListContainer" class="max-h-48 overflow-y-auto space-y-1">
-              <div class="text-xs text-slate-500 italic">No se han registrado daños preexistentes aún.</div>
+          <div class="space-y-3">
+            <div>
+              <label for="inpReceiverName" class="block text-xs font-medium text-slate-300 mb-1.5">Recepción en Taller / Destino (Opcional)</label>
+              <input type="text" id="inpReceiverName" placeholder="Nombre y apellido de quien recibe el vehículo"
+                class="w-full min-h-[44px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:border-orange-500">
             </div>
+            <p class="text-xs text-slate-300">
+              Al sellar el acta se calcula el hash SHA-256 real sobre el payload de peritaje y liquidación dividida (incluyendo adicionales y recargos de la orden).
+            </p>
+            <button id="btnSealInspectionActa" type="button" class="w-full min-h-[48px] py-3.5 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition inline-flex items-center justify-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Sellar Acta Digital de Remolque con SHA-256</span>
+            </button>
           </div>
         </div>
-
-        <button id="btnSealInspectionActa" class="w-full py-3.5 bg-orange-600 hover:bg-orange-500 text-white font-black text-sm rounded-xl shadow-lg shadow-orange-950/50 transition">
-          🛡️ Sellar Acta Digital de Remolque con SHA-256
-        </button>
       </div>
     </section>
 
     <!-- 4. VISTA: Modo Cabina Chofer -->
-    <section id="tab-cab-mode" class="tab-content hidden space-y-4 max-w-xl mx-auto">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl space-y-5">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">📱</span>
+    <section id="tab-cab-mode" role="tabpanel" aria-labelledby="tab-btn-cab-mode" class="tab-content hidden space-y-4 max-w-xl mx-auto">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 gap-3">
+          <div class="flex items-center gap-2.5">
+            <svg aria-hidden="true" class="w-5 h-5 text-orange-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>
+            </svg>
             <div>
-              <h2 class="font-black text-base text-slate-100 uppercase">Modo Cabina</h2>
-              <p class="text-[11px] text-slate-400">Optimizado para soporte en parabrisas</p>
+              <h2 class="font-bold text-lg text-slate-100 uppercase">Modo Cabina</h2>
+              <p class="text-xs text-slate-300">Optimizado para soporte en parabrisas</p>
             </div>
           </div>
-          <span class="bg-orange-950 text-orange-400 border border-orange-800 text-[10px] font-mono font-bold px-2.5 py-1 rounded-full">
-            EN RUTA
+          <span id="cabStatusBadge" class="bg-slate-800 text-orange-300 border border-slate-700 text-xs font-mono font-bold px-2.5 py-1 rounded-md">
+            SIN ORDEN
           </span>
         </div>
 
-        <!-- Botón Screen Wake Lock -->
-        <button id="btnToggleWakeLock" class="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white font-extrabold rounded-xl shadow-lg shadow-orange-950/50 flex items-center justify-center gap-2 text-base transition">
-          💤 ACTIVAR PANTALLA FIJA (WAKE LOCK)
+        <!-- Botón Screen Wake Lock (>=48px cabina) -->
+        <button id="btnToggleWakeLock" type="button" class="w-full min-h-[48px] py-3.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm transition">
+          <svg aria-hidden="true" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <span>ACTIVAR PANTALLA FIJA (WAKE LOCK)</span>
         </button>
 
-        <!-- Ficha Rápida del Vehículo a Remolcar -->
-        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="text-xs text-slate-400">Dominio / Patente:</span>
-            <span id="cabPlate" class="text-xl font-mono font-black text-orange-400 bg-slate-900 px-3 py-1 rounded border border-slate-700">AF 342 KL</span>
+        <!-- Empty State Cab Mode -->
+        <div id="cabEmptyState" class="hidden border-y border-slate-800 py-6 text-center space-y-2">
+          <p class="text-sm font-semibold text-slate-200">No hay órdenes activas en este momento</p>
+          <p class="text-xs text-slate-400">Cree una nueva orden en Nuevo Auxilio para visualizar la hoja de ruta en cabina.</p>
+        </div>
+
+        <!-- Ficha Rápida del Vehículo a Remolcar (plana con divisores) -->
+        <div id="cabOrderDetails" class="divide-y divide-slate-800 border-y border-slate-800">
+          <div class="flex justify-between items-center py-3">
+            <span class="text-xs text-slate-300">Dominio / Patente:</span>
+            <span id="cabPlate" class="text-xl font-mono font-black text-orange-400">--</span>
           </div>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-slate-400">Modelo:</span>
-            <span id="cabModel" class="font-bold text-slate-200">Toyota Hilux 4x4</span>
+          <div class="flex justify-between items-center py-2.5 text-xs">
+            <span class="text-slate-300">Modelo:</span>
+            <span id="cabModel" class="font-bold text-slate-100">--</span>
           </div>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-slate-400">Distancia Acarreo:</span>
-            <span id="cabDistance" class="font-mono font-bold text-emerald-400">38.5 km</span>
+          <div class="flex justify-between items-center py-2.5 text-xs">
+            <span class="text-slate-300">Distancia Acarreo:</span>
+            <span id="cabDistance" class="font-mono font-bold text-emerald-400">0.0 km</span>
           </div>
-          <div class="pt-2 border-t border-slate-800 text-xs">
-            <div class="text-slate-400">Lugar de Siniestro:</div>
-            <div id="cabOrigin" class="font-semibold text-slate-100 truncate">Ruta Nacional 9 Km 74 (Campana)</div>
+          <div class="py-2.5 text-xs space-y-1">
+            <div class="text-slate-300">Lugar de Siniestro:</div>
+            <div id="cabOrigin" class="font-semibold text-slate-100">--</div>
           </div>
-          <div class="text-xs">
-            <div class="text-slate-400">Destino:</div>
-            <div id="cabDest" class="font-semibold text-slate-100 truncate">Taller Oficial Zárate</div>
+          <div class="py-2.5 text-xs space-y-1">
+            <div class="text-slate-300">Destino:</div>
+            <div id="cabDest" class="font-semibold text-slate-100">--</div>
           </div>
         </div>
 
-        <!-- Botones Táctiles Grandes para Parabrisas -->
-        <div class="grid grid-cols-2 gap-3">
-          <a href="https://maps.google.com" target="_blank" rel="noopener" class="py-3.5 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 text-center transition">
-            🗺️ Google Maps
+        <!-- Botones Táctiles Grandes para Parabrisas (>=48px) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a id="cabMapsLink" href="https://maps.google.com" target="_blank" rel="noopener noreferrer"
+            class="min-h-[48px] py-3 px-4 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 text-center transition">
+            <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+            </svg>
+            <span>Abrir en Google Maps</span>
           </a>
-          <a href="tel:08008882222" class="py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2 text-center transition">
-            📞 Llamar Titular
+          <a id="cabCallLink" href="#"
+            class="min-h-[48px] py-3 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold rounded-xl text-xs flex items-center justify-center gap-2 text-center transition">
+            <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <span id="cabCallLabel">Llamar Titular</span>
           </a>
         </div>
 
-        <button id="btnCabArrived" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-950/40 transition">
-          📍 Confirmar Llegada a Siniestro
+        <button id="btnCabArrived" type="button" class="w-full min-h-[48px] py-3.5 px-4 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition inline-flex items-center justify-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Confirmar Llegada a Siniestro</span>
         </button>
       </div>
     </section>
 
     <!-- 5. VISTA: Liquidación & Reportes -->
-    <section id="tab-reports" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-3">
+    <section id="tab-reports" role="tabpanel" aria-labelledby="tab-btn-reports" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-4">
           <div>
-            <h2 class="font-bold text-base text-slate-100">Liquidación & Actas para Aseguradoras</h2>
-            <p class="text-xs text-slate-400">Auditoría geodésica de kilómetros y sellos criptográficos SHA-256</p>
+            <h2 class="font-bold text-lg text-slate-100">Liquidación y Actas para Aseguradoras</h2>
+            <p class="text-xs text-slate-300">Auditoría geodésica de kilómetros y sellos criptográficos SHA-256</p>
           </div>
 
-          <div class="flex items-center gap-3">
-            <select id="selInsuranceFilter" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-slate-200">
-              <option value="ALL">Todas las Aseguradoras</option>
-              <option value="La Segunda">La Segunda Seguros</option>
-              <option value="Federación Patronal">Federación Patronal</option>
-              <option value="San Cristóbal">San Cristóbal Seguros</option>
-              <option value="Rivadavia">Seguros Rivadavia</option>
-              <option value="Zurich">Zurich Argentina</option>
-            </select>
-            <button id="btnExportCsv" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
-              📥 Excel (CSV)
+          <div class="flex flex-wrap items-end gap-3">
+            <div>
+              <label for="selInsuranceFilter" class="block text-xs font-medium text-slate-300 mb-1">Filtrar por Aseguradora</label>
+              <select id="selInsuranceFilter" class="min-h-[44px] bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-2.5 text-slate-100 focus:border-orange-500">
+                <option value="ALL">Todas las Aseguradoras</option>
+                <option value="La Segunda">La Segunda Seguros</option>
+                <option value="Federación Patronal">Federación Patronal</option>
+                <option value="San Cristóbal">San Cristóbal Seguros</option>
+                <option value="Rivadavia">Seguros Rivadavia</option>
+                <option value="Zurich">Zurich Argentina</option>
+                <option value="Servicio Particular">Particular (Sin Seguro)</option>
+              </select>
+            </div>
+            <button id="btnExportCsv" type="button" class="min-h-[44px] bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition inline-flex items-center gap-1.5">
+              <svg aria-hidden="true" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Exportar CSV</span>
             </button>
           </div>
         </div>
@@ -482,13 +583,13 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
-                <th class="py-3 px-4">Acta Nº</th>
-                <th class="py-3 px-4">Vehículo</th>
-                <th class="py-3 px-4">Aseguradora</th>
-                <th class="py-3 px-4 text-right">Aseguradora (ARS)</th>
-                <th class="py-3 px-4 text-right">Particular (ARS)</th>
-                <th class="py-3 px-4 text-center">Comprobante</th>
+              <tr class="bg-slate-950 border-b border-slate-800 text-slate-300 uppercase text-xs tracking-wider">
+                <th scope="col" class="py-3 px-4">Acta Nº</th>
+                <th scope="col" class="py-3 px-4">Vehículo</th>
+                <th scope="col" class="py-3 px-4">Aseguradora</th>
+                <th scope="col" class="py-3 px-4 text-right">Aseguradora (ARS)</th>
+                <th scope="col" class="py-3 px-4 text-right">Particular (ARS)</th>
+                <th scope="col" class="py-3 px-4 text-center">Comprobante</th>
               </tr>
             </thead>
             <tbody id="tblReportsBody">
@@ -501,13 +602,31 @@
 
   </main>
 
+  <!-- Diálogo accesible de confirmación de purga -->
+  <dialog id="dlgConfirmPurge" role="dialog" aria-modal="true" aria-labelledby="dlgPurgeTitle"
+    class="bg-slate-900 text-slate-100 border border-slate-700 rounded-xl p-6 max-w-md w-full backdrop:bg-slate-950/80">
+    <h2 id="dlgPurgeTitle" class="text-lg font-bold text-slate-100">Limpiar datos locales y demo</h2>
+    <p class="text-sm text-slate-300 mt-2">
+      Esta acción eliminará las órdenes de auxilio, actas selladas y la cola local almacenada en este navegador. No se volverán a sembrar datos demo automáticamente.
+    </p>
+    <div class="flex flex-wrap justify-end gap-3 mt-5">
+      <button id="btnCancelPurge" type="button" class="min-h-[44px] px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-bold rounded-lg transition">
+        Cancelar
+      </button>
+      <button id="btnConfirmPurge" type="button" class="min-h-[44px] px-4 py-2.5 bg-red-700 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition">
+        Confirmar Limpieza
+      </button>
+    </div>
+  </dialog>
+
   <!-- Contenedor Oculto para Impresión de Actas A4 -->
   <div id="printContainer" class="hidden"></div>
 
-  <footer class="bg-slate-900 border-t border-slate-800 py-3 text-center text-xs text-slate-500 no-print">
-    CraneTrack v1.0.00 • AiAppFactory Standard • 100% Offline-First PWA
+  <footer class="bg-slate-900 border-t border-slate-800 py-3 px-4 text-center text-xs text-slate-300 no-print">
+    CraneTrack <span id="footerVersionMeta">v1.0.01</span> - Despacho 24/7, Peritaje Pre-Enganche y Split-Billing Local
   </footer>
 
-  <script type="module" src="src/app.js"></script>
+  <script type="module" src="./src/sw-register.js"></script>
+  <script type="module" src="./src/app.js"></script>
 </body>
 </html>

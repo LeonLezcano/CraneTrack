@@ -1,58 +1,54 @@
-# 🚛 CraneTrack v1.0.00
-### Plataforma de Auxilio Mecánico Pesado, Remolques 24/7, Odómetro Haversine & Split-Billing Aseguradoras
+# CraneTrack
 
-> **AiAppFactory Standard:** Emergency 24/7 Dispatch, Geodesic Audit, Pre-Tow Visual Damage Map & Interoperable QR 3.0  
-> **Directivas:** Testing-First (56 tests en 5 capas), AppSec Guardian 100/100, Zero Fake Features, Zero-Sink DOM Armor, Screen Wake Lock API.
+Plataforma de despacho 24/7, odómetro geodésico Haversine, peritaje pre-enganche y split-billing para aseguradoras y servicio particular.
 
----
+## 1. Propósito y Funcionalidades Reales Implementadas
 
-## 🎯 1. Propósito y Dolor Resuelto
-CraneTrack digitaliza la operación de empresas de auxilio mecánico, grúas hidráulicas de plancha y rescate pesado:
-1. **Recortes de Kilometraje en Aseguradoras:** Cálculo geodésico auditado (Haversine) entre Base Central $\to$ Siniestro $\to$ Taller/Destino $\to$ Retorno, eliminando discrepancias en liquidaciones con La Segunda, Federación Patronal, San Cristóbal, Rivadavia y Zurich.
-2. **Reclamos Fraudulentos por Daños:** Peritaje visual de 5 cuadrantes (Frente, Lateral Izquierdo, Lateral Derecho, Trasera, Bajos) y checklist técnico (Caja Automática, Tracción 4x4 AWD, Dirección Bloqueada) con captura de fotos testigo geolocalizadas y firma del titular antes del izaje.
-3. **Cobro de Excedentes en Ruta (Split-Billing):** Desdoblamiento automático entre los kilómetros cubiertos por la póliza y los kilómetros excedentes + adicionales de rescate (malacate en zanja, patines dolly, subsuelos) con generación de cuerda QR Interoperable BCRA 3.0 para cobro en el acto.
-4. **Modo Cabina para Choferes (Screen Wake Lock API):** Pantalla activa continua en el soporte de parabrisas con auto-reenganche al regresar de Waze o Google Maps.
+1. **Centro de Despacho 24/7 (`src/core/fleetEmergencyDispatcherEngine.js`, `src/app.js`):**
+   - Tablero con KPIs calculados dinámicamente desde almacenamiento local (`CraneTrackCacheService`): unidades asignadas, órdenes activas, cumplimiento SLA y excedentes liquidados.
+   - Purga explícita de registros locales/demo con diálogo accesible y protección anti-re-siembra (`cranetrack_demo_purged`).
+2. **Odómetro Geodésico y Split-Billing (`src/core/towMileageTariffEngine.js`):**
+   - Cálculo de distancia Haversine entre ubicaciones preestablecidas o ingreso manual de kilometraje.
+   - Desdoblamiento entre franquicia cubierta por aseguradora y excedentes/adicionales a cargo del titular en ruta.
+   - El módulo de cobro QR (`[MOCK] Payload QR Interoperable BCRA 3.0`) genera localmente la cadena EMVCo de prueba sin pasarela de pago conectada ni generación gráfica de QR.
+3. **Peritaje Pre-Enganche y Firma en Pantalla (`src/core/preTowVisualInspectionEngine.js`, `src/services/towActaLedgerService.js`):**
+   - Selector de orden activa, protocolo de seguridad mecánica (transmisión, tracción, llaves, dirección, ruedas), registro de daños por cuadrante y firma táctil/puntero en `<canvas>`.
+   - Sellado criptográfico real SHA-256 vía Web Crypto API (`CryptoSeal`), exportación CSV con BOM UTF-8 e impresión A4 limpia (`@media print`).
+4. **Modo Cabina para Choferes (`#tab-cab-mode`):**
+   - Integración de `Screen Wake Lock API` con fallback no bloqueante, enlace dinámico a Google Maps según origen de la orden, enlace telefónico al titular si hay teléfono cargado y persistencia de estado `ON_SCENE` al confirmar llegada.
 
----
+## 2. Arquitectura y Diseño
 
-## 🏗️ 2. Arquitectura de Módulos
-```
+- **Sistema Visual:** Documentado en [DESIGN.md](./DESIGN.md) (tema oscuro de alto contraste para cabina nocturna, tipografía del sistema sin fuentes externas, áreas táctiles `>=44px` y `>=48px` en Modo Cabina).
+- **Offline-First y Seguridad:**
+  - Tailwind CSS compilado localmente en `styles.css` (sin `cdn.tailwindcss.com`).
+  - Web App Manifest (`manifest.json`), registro de Service Worker (`src/sw-register.js` -> `sw.js`) con caché versionada de assets estáticos y cabecera `Cache-Control: no-cache, no-store, must-revalidate` en `/sw.js` dentro de `firebase.json`.
+  - `Content-Security-Policy` sin `'unsafe-inline'` en `script-src` y renderizado DOM seguro mediante `Sanitizer.safeSetInnerHTML()` y `Sanitizer.escapeHTML()`.
+
+```text
 src/
+├── app.js
+├── input.css
+├── sw-register.js
 ├── core/
-│   ├── towMileageTariffEngine.js          # Odómetro Haversine y Split-Billing aseguradora vs particular
-│   ├── preTowVisualInspectionEngine.js    # Peritaje de daños de 5 cuadrantes y checklist técnico
-│   └── fleetEmergencyDispatcherEngine.js  # Asignación de unidades, SLA 24/7 y Screen Wake Lock
+│   ├── towMileageTariffEngine.js
+│   ├── preTowVisualInspectionEngine.js
+│   └── fleetEmergencyDispatcherEngine.js
 ├── services/
-│   ├── towActaLedgerService.js            # Emisión de actas digitales selladas con SHA-256 y CSV
-│   └── craneTrackCache.service.js         # Persistencia Offline-First, Outbox FIFO y anti-siembras
+│   ├── towActaLedgerService.js
+│   └── craneTrackCache.service.js
 └── utils/
-    ├── sanitizer.js                       # Sanitizador estricto Zero-Sink DOM Armor
-    ├── cryptoSeal.js                      # Sello SHA-256 determinista para comprobantes forenses
-    └── formatters.js                      # Formateo de patentes Mercosur/Clásicas, ARS, km y fecha
+    ├── sanitizer.js
+    ├── cryptoSeal.js
+    └── formatters.js
 ```
 
----
-
-## 🧪 3. Batería de Pruebas Multi-Capa (56 Tests Aprobados)
+## 3. Pruebas y Auditoría de Seguridad
 
 ```bash
-# Ejecutar suite de pruebas completa:
+# Suite automatizada de 5 capas (58 tests)
 pnpm test
-# o con Node:
-node tests/run_tests.js
+
+# Auditoría de seguridad estática y simulación de abuso
+pnpm run security:full
 ```
-- **Capa 1 (Unitarias & Fuzzing):** 33 tests (Haversine, Split-Billing, convenios de aseguradoras, patines dolly, recargos nocturnos, SLA, patentes y formatters).
-- **Capa 2 (Integración & Offline):** 8 tests (Cache local, Outbox FIFO, anti-siembra de demo, sellado SHA-256).
-- **Capa 3 (Componentes & Formatters):** 4 tests (Sanitizer XSS, URLs, comprobante HTML membretado, CSV).
-- **Capa 4 (Seguridad & CSP):** 8 tests (firebase.json headers, firestore.rules zero-trust, inmutabilidad de actas).
-- **Capa 5 (E2E & Campo):** 3 tests (Ciclo completo de auxilio en ruta, Screen Wake Lock fallback, versiones).
-
----
-
-## 🛡️ 4. Auditoría de Seguridad (AppSec Guardian)
-
-```bash
-pnpm run test:security
-```
-- **Puntaje:** **100/100** (0 críticas, 0 altas, 0 medias, 0 bajas).
-- **Headers:** Content-Security-Policy estricta, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `HSTS`.
